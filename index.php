@@ -12,6 +12,27 @@ build = 2636
 package_update_channel = stable
 */
 
+function debug_capture_print_r($data) {
+  ob_start();
+  print_r($data);
+  $result = ob_get_contents();
+  ob_end_clean();
+  return $result;
+}
+
+function debug_var($name, $data) {
+  $captured = explode("\n",debug_capture_print_r($data));
+  if (count($captured) == 1) {
+    error_log($name.':'.$captured[0], 0);
+  }
+  else {
+    error_log($name, 0);
+    foreach($captured as $line) {
+      error_log($line, 0);
+    }
+  }
+}
+
 $spkDir = "packages/";  // This has to be a directory relative to
                         // where this  script is and served by Apache
 $synologyModels = "conf/synology_models.conf";  // File where Syno models are
@@ -20,7 +41,7 @@ $synologyModels = "conf/synology_models.conf";  // File where Syno models are
 $excludedSynoServices = array("apache-sys","apache-web","mdns","samba","db","applenetwork","cron","nfs","firewall");
 $host = $_SERVER['HTTP_HOST'].substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], "/"))."/";
 
-$siteName = "Simple SPK Server";
+$siteName = "PlexConnect SPK Server";
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
@@ -72,7 +93,7 @@ elseif($_SERVER['REQUEST_METHOD'] == 'GET')
     echo ($arch && !$channel)?"\t\t\t\t<li><a href=\"".$_SERVER['REQUEST_URI']."&channel=beta\">Show Beta Packages</a></li>\n":"";
     echo $channel?"\t\t\t\t<li><a href=\"index.php?arch=".$arch."\">Hide Beta Packages</a></li>\n":"";
     echo !$fullList?"\t\t\t\t<li><a href=\"index.php?fulllist=true\">Full Packages List</a></li>\n":"";
-    echo "\t\t\t\t<li class=\"last\"><a href=\"http://github.com/jdel/sspks\">Host your own packages</a></li>\n";
+    echo "\t\t\t\t<li><a href=\"https://forums.plex.tv/index.php/topic/72356-plexconnect-on-synology\">Setup Instructions</a></li>\n";
     echo "\t\t\t</ul>\n";
     echo "\t\t</div>\n";
     echo "\t\t<div id=\"source-info\">\n";
@@ -90,9 +111,6 @@ elseif($_SERVER['REQUEST_METHOD'] == 'GET')
     echo "\t\t\t</ul>\n";
     echo "\t\t</div>\n";
     echo "\t\t<hr />\n";
-    echo "\t\t<div id=\"footer\">\n";
-    echo "\t\t\t<p>Help this website get better on <a href=\"http://github.com/jdel/sspks\">Github</a></p>\n";
-    echo "\t\t</div>\n";
     echo "\t</body>\n";
     echo "</html>";
 }
