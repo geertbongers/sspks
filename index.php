@@ -43,16 +43,16 @@ $host = $_SERVER['HTTP_HOST'].substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVE
 
 $siteName = "PlexConnect SPK Server";
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-    $language = trim($_POST['language']);
-    $timezone = trim($_POST['timezone']);
-    $arch = trim($_POST['arch']);
-    $major = trim($_POST['major']);
-    $minor = trim($_POST['minor']);
-    $build = trim($_POST['build']);
-    $channel = trim($_POST['package_update_channel']);
-    $unique = trim($_POST['unique']);
+if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn'])){
+    $language = trim($_REQUEST['language']);
+    $timezone = trim($_REQUEST['timezone']);
+    $arch = trim($_REQUEST['arch']);
+    $major = trim($_REQUEST['major']);
+    $minor = trim($_REQUEST['minor']);
+    $build = trim($_REQUEST['build']);
+    $channel = trim($_REQUEST['package_update_channel']);
+    $unique = trim($_REQUEST['unique']);
+    $serial = trim($_REQUEST['ds_sn']);
 
     if (!$language || !$timezone || !$arch || !$major || is_null($minor) || !$build || !$channel || !$unique || !$serial || !(preg_match("/^$unique/", $_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP) Synology\"" || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)\"" )){
         header('Content-type: text/html');
@@ -153,10 +153,13 @@ function GetPackageList($arch="noarch", $beta=false, $version="") {
                 foreach(GetDirectoryList($spkDir, basename($nfoFile, ".nfo").".*_screen_.*\.png") as $snapshot){
                     $packageInfo['snapshot'][] = "http://".$host.$spkDir.$snapshot;
                 }
+                if (empty($packageInfo['package']) && !empty($packageInfo['supackage'])) {
+                  $packageInfo["package"] = $packageInfo['supackage'];
+                }
                 if (    (empty($packagesAvailable[$packageInfo['package']])
                     || version_compare($packageInfo['version'], $packagesAvailable[$packageInfo['package']]['version'], ">"))
                     && ($packageInfo['arch'] == $arch || $packageInfo['arch'] == "noarch")
-                    && (($beta == "beta" && $packageInfo['beta'] == true) || empty($packageInfo['beta']))
+                    && (($beta == "beta" && isset($packageInfo['beta']) && ($packageInfo['beta'] == true)) || empty($packageInfo['beta']))
                     && ((version_compare($version, $packageInfo['firmware'], ">=")) || $version == "skip")
                     ) {
                     $packagesAvailable[$packageInfo['package']] = $packageInfo;
@@ -226,8 +229,10 @@ function DisplayPackagesJSON($packagesAvailable){
         "price" => 0,                                                                                       // New property
         //"recent_download_count" => 1222,                                                                  // Not sure what this does
         "type" => 0,                                                                                        // New property introduced, no effect on othersources packages
-        "snapshot" => $packageInfo['snapshot']                                                              // Adds multiple screenshots to package view
         );
+        if (!empty($packageInfo['snapshot'])){
+            $packageJSON["snapshot"] = $packageInfo['snapshot'];                                            // Adds multiple screenshots to package view
+        }
         $packagesJSON[] = $packageJSON;
     }
     return $packagesJSON;
