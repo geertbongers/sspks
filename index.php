@@ -54,7 +54,20 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn'])){
     $unique = trim($_REQUEST['unique']);
     $serial = trim($_REQUEST['ds_sn']);
 
-    if (!$language || !$timezone || !$arch || !$major || is_null($minor) || !$build || !$channel || !$unique || !$serial || !(preg_match("/^$unique/", $_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP) Synology\"" || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)\"" )){
+    if (!$language || !$timezone || !$arch || !$major || is_null($minor) || !$build || !$channel || !$unique /*|| !$serial */ || !(preg_match("/^$unique/", $_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP) Synology\"" || $_SERVER['HTTP_USER_AGENT'] == "\"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)\"" )){
+        /*
+        debug_var("language",$language);
+        debug_var("timezone",$timezone);
+        debug_var("arch",$arch);
+        debug_var("major",$major);
+        debug_var("major",$major);
+        debug_var("build",$build);
+        debug_var("channel",$channel);
+        debug_var("unique",$unique);
+        debug_var("serial",$serial);
+        debug_var("HTTP_USER_AGENT",$_SERVER['HTTP_USER_AGENT']);
+        debug_var("_REQUEST",$_REQUEST);
+        */
         header('Content-type: text/html');
         header('HTTP/1.1 404 Not Found');
         header('Status: 404 Not Found');
