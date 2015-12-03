@@ -45,7 +45,7 @@ $siteName = "PlexConnect SPK Server";
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn']) || isset($_GET['json'])){
     if ($_GET['json']) {
-        echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList(isset($_GET['arch']) ? $_GET['arch'] : 'noarch'))));
+        echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList(isset($_GET['arch']) ? $_GET['arch'] : 'noarch', false, 'skip'))));
     }
     $language = trim($_REQUEST['language']);
     $timezone = trim($_REQUEST['timezone']);
