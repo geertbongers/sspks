@@ -44,7 +44,7 @@ $host = $_SERVER['HTTP_HOST'].substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVE
 $siteName = "PlexConnect SPK Server";
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn']) || isset($_GET['json'])){
-    if ($_GET['json'] == 'yes') {
+    if (isset($_GET['json']) && $_GET['json'] == 'yes') {
         echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList(isset($_GET['arch']) ? $_GET['arch'] : 'noarch', false, 'skip'))));
     }
     $language = trim($_REQUEST['language']);
