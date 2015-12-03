@@ -78,9 +78,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn']) || isset
         if($arch == "88f6282"){
             $arch = "88f6281";
         }
-        $return = stripslashes(json_encode(DisplayPackagesJSON(GetPackageList($arch, $channel, $major.".".$minor.".".$build))));
-        file_put_contents('/volume1/web/sspks/temp/request.json', $return);
-        echo $return;
+        echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList($arch, $channel, $major.".".$minor.".".$build))));
     }
 }
 elseif($_SERVER['REQUEST_METHOD'] == 'GET')
