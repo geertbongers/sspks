@@ -44,7 +44,7 @@ $host = $_SERVER['HTTP_HOST'].substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVE
 $siteName = "PlexConnect SPK Server";
 
 if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn']) || isset($_GET['json'])){
-    if ($_GET['json']) {
+    if ($_GET['json'] == 'yes') {
         echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList(isset($_GET['arch']) ? $_GET['arch'] : 'noarch', false, 'skip'))));
     }
     $language = trim($_REQUEST['language']);
@@ -78,7 +78,9 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') || isset($_REQUEST['ds_sn']) || isset
         if($arch == "88f6282"){
             $arch = "88f6281";
         }
-        echo stripslashes(json_encode(DisplayPackagesJSON(GetPackageList($arch, $channel, $major.".".$minor.".".$build))));
+        $return = stripslashes(json_encode(DisplayPackagesJSON(GetPackageList($arch, $channel, $major.".".$minor.".".$build))));
+        file_put_contents('/volume1/web/sspks/temp/request.json', $return);
+        echo $return;
     }
 }
 elseif($_SERVER['REQUEST_METHOD'] == 'GET')
